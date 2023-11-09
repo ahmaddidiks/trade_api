@@ -1,0 +1,21 @@
+package main
+
+import (
+	"basic-trade-api/database"
+	"basic-trade-api/routers"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
+func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	PORT := os.Getenv("WEB_SERVER_PORT")
+
+	database.StartDB()
+	routers.StartServer().Run(PORT)
+}
