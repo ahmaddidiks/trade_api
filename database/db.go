@@ -1,11 +1,10 @@
 package database
 
 import (
+	"basic-trade-api/models"
 	"fmt"
 	"log"
 	"os"
-
-	// "rest-api/models"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -35,7 +34,7 @@ func StartDB() {
 		log.Fatal("error connecting to database: ", err)
 	}
 
-	// db.Debug().AutoMigrate(models.Order{}, models.Item{})
+	db.Debug().AutoMigrate(models.Admin{}, models.Product{}, models.Variant{})
 }
 
 func GetDB() *gorm.DB {

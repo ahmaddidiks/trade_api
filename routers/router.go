@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"fmt"
+	"basic-trade-api/controllers"
 	"log"
 	"os"
 
@@ -24,19 +24,29 @@ func StartServer() *gin.Engine {
 	router.ForwardedByClientIP = true
 	router.SetTrustedProxies(trustedIPs)
 
-	router.POST("/auth/register", test)
-	router.POST("/orders", test)
-	router.POST("/orders", test)
-	router.POST("/orders", test)
-	router.POST("/orders", test)
-	router.POST("/orders", test)
-	router.POST("/orders", test)
-	router.POST("/orders", test)
-	router.POST("/orders", test)
+	router.POST("/auth/register", controllers.RegisterAdmin)
+
+	router.POST("/auth/login", controllers.LoginAdmin)
+
+	router.GET("/products", controllers.GetAllProducts)
+
+	router.POST("/products", controllers.CreateProduct)
+
+	router.PUT("/products/:productUUID", controllers.UpdateProductByUUID)
+
+	router.DELETE("/products/:productUUID", controllers.DeteleProductByUUID)
+
+	router.GET("/products/:productUUID", controllers.GetProductByUUID)
+
+	router.GET("/products/variants", controllers.GetAllVariants)
+
+	router.POST("/products/variants", controllers.CreateVariant)
+
+	router.PUT("/products/variants/:variantUUID", controllers.UpdateVariantByUUID)
+
+	router.DELETE("/products/variants/:variantUUID", controllers.DeleteVariantByUUID)
+
+	router.GET("/products/variants/:variantUUID", controllers.GetVariantByUUID)
 
 	return router
-}
-
-func test(ctx *gin.Context) {
-	fmt.Println("test")
 }
