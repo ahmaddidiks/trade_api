@@ -1,29 +1,42 @@
 package models
 
 import (
-	"errors"
-	"fmt"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"gorm.io/gorm"
 )
 
 type Product struct {
-	ID        int    `gorm:"primaryKey"`
+	ID        uint   `gorm:"primaryKey"`
 	UUID      string `gorm:"not null;type:varchar(50)"`
-	Name      string `gorm:"not null;unique;type:varchar(50)"`
+	Name      string `gorm:"not null;unique" json:"name" form:"name" valid:"required~Your product name is required"`
 	ImageURL  string `gorm:"not null;type:varchar"`
-	AdminID   int    `gorm:"not null"`
+	AdminID   uint
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 }
 
-func (p *Product) BeforeCreate(tx *gorm.DB) (err error) {
-	fmt.Println("Before creating Product")
+func (p Product) BeforeCreate(tx *gorm.DB) (err error) {
+	_, errCreate := govalidator.ValidateStruct(p)
 
-	if len(p.Name) < 4 {
-		err = errors.New("name is too short")
+	if errCreate != nil {
+		err = errCreate
+		return
 	}
 
+	err = nil
+	return
+}
+
+func (p Product) BeforeUpdate(tx *gorm.DB) (err error) {
+	_, errCreate := govalidator.ValidateStruct(p)
+
+	if errCreate != nil {
+		err = errCreate
+		return
+	}
+
+	err = nil
 	return
 }

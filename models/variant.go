@@ -1,29 +1,42 @@
 package models
 
 import (
-	"errors"
-	"fmt"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"gorm.io/gorm"
 )
 
 type Variant struct {
-	ID          int    `gorm:"primaryKey"`
-	UUID        string `gorm:"not null;type:varchar(50)"`
-	VariantName string `gorm:"not null;type:varchar(50)"`
-	Quantity    int    `gorm:"not null"`
-	ProductID   int    `gorm:"not null"`
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
+	ID          uint       `gorm:"primaryKey"`
+	UUID        string     `gorm:"not null" json:"uuid"`
+	VariantName string     `gorm:"not null" json:"variant_name" form:"title" valid:"required~Name of varient is required"`
+	Quantity    int        `gorm:"not null" json:"quantity" form:"quantity" valid:"required~Quantity of variant is required, numeric~Invalid quantity format"`
+	ProductID   uint       `gorm:"not null"`
+	CreatedAt   *time.Time `json:"created_at,omitempty"`
+	UpdatedAt   *time.Time `json:"updated_at,omitempty"`
 }
 
 func (v *Variant) BeforeCreate(tx *gorm.DB) (err error) {
-	fmt.Println("Before creating Variant")
+	_, errCreate := govalidator.ValidateStruct(v)
 
-	if len(v.VariantName) < 4 {
-		err = errors.New("name is too short")
+	if errCreate != nil {
+		err = errCreate
+		return
 	}
 
+	err = nil
+	return
+}
+
+func (v *Variant) BeforeUpdate(tx *gorm.DB) (err error) {
+	_, errCreate := govalidator.ValidateStruct(v)
+
+	if errCreate != nil {
+		err = errCreate
+		return
+	}
+
+	err = nil
 	return
 }

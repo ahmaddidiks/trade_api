@@ -2,6 +2,7 @@ package routers
 
 import (
 	"basic-trade-api/controllers"
+	"basic-trade-api/middleware"
 	"log"
 	"os"
 
@@ -24,29 +25,31 @@ func StartServer() *gin.Engine {
 	router.ForwardedByClientIP = true
 	router.SetTrustedProxies(trustedIPs)
 
-	router.POST("/auth/register", controllers.RegisterAdmin)
+	auth := router.Group("/auth")
+	{
+		auth.POST("/register", controllers.RegisterAdmin)
+		auth.POST("/login", controllers.LoginAdmin)
+	}
 
-	router.POST("/auth/login", controllers.LoginAdmin)
+	product := router.Group("/products")
+	{
+		product.Use(middleware.Authentication())
 
-	router.GET("/products", controllers.GetAllProducts)
+		product.GET("/", controllers.GetAllProducts)
+		product.POST("/", controllers.CreateProduct)
+		product.PUT("/:productUUID", controllers.UpdateProductByUUID)
+		product.DELETE("/:productUUID", controllers.DeteleProductByUUID)
+		product.GET("/:productUUID", controllers.GetProductByUUID)
+	}
 
-	router.POST("/products", controllers.CreateProduct)
-
-	router.PUT("/products/:productUUID", controllers.UpdateProductByUUID)
-
-	router.DELETE("/products/:productUUID", controllers.DeteleProductByUUID)
-
-	router.GET("/products/:productUUID", controllers.GetProductByUUID)
-
-	router.GET("/products/variants", controllers.GetAllVariants)
-
-	router.POST("/products/variants", controllers.CreateVariant)
-
-	router.PUT("/products/variants/:variantUUID", controllers.UpdateVariantByUUID)
-
-	router.DELETE("/products/variants/:variantUUID", controllers.DeleteVariantByUUID)
-
-	router.GET("/products/variants/:variantUUID", controllers.GetVariantByUUID)
+	variant := router.Group("/products/variant")
+	{
+		variant.GET("/", controllers.GetAllVariants)
+		variant.POST("/", controllers.CreateVariant)
+		variant.PUT("/:variantUUID", controllers.UpdateVariantByUUID)
+		variant.DELETE("/:variantUUID", controllers.DeleteVariantByUUID)
+		variant.GET("/:variantUUID", controllers.GetVariantByUUID)
+	}
 
 	return router
 }
