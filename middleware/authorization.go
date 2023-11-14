@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"basic-trade-api/database"
-	"basic-trade-api/models"
 	"net/http"
+	"trade-api/database"
+	"trade-api/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

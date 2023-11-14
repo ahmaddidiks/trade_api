@@ -1,10 +1,10 @@
 package routers
 
 import (
-	"basic-trade-api/controllers"
-	"basic-trade-api/middleware"
 	"log"
 	"os"
+	"trade-api/controllers"
+	"trade-api/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

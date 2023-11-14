@@ -1,10 +1,10 @@
 package main
 
 import (
-	"basic-trade-api/database"
-	"basic-trade-api/routers"
 	"log"
 	"os"
+	"trade-api/database"
+	"trade-api/routers"
 
 	"github.com/joho/godotenv"
 )

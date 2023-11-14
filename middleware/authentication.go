@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"basic-trade-api/helpers"
 	"net/http"
+	"trade-api/helpers"
 
 	"github.com/gin-gonic/gin"
 )

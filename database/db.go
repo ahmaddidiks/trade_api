@@ -1,10 +1,10 @@
 package database
 
 import (
-	"basic-trade-api/models"
 	"fmt"
 	"log"
 	"os"
+	"trade-api/models"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"

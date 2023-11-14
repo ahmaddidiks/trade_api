@@ -8,11 +8,12 @@ import (
 )
 
 type Variant struct {
-	ID          uint       `gorm:"primaryKey"`
-	UUID        string     `gorm:"not null" json:"uuid"`
-	VariantName string     `gorm:"not null" json:"variant_name" form:"title" valid:"required~Name of varient is required"`
-	Quantity    int        `gorm:"not null" json:"quantity" form:"quantity" valid:"required~Quantity of variant is required, numeric~Invalid quantity format"`
-	ProductID   uint       `gorm:"not null"`
+	ID          uint   `gorm:"primaryKey"`
+	UUID        string `gorm:"not null" json:"uuid"`
+	VariantName string `gorm:"not null" json:"variant_name" form:"title" valid:"required~Name of varient is required"`
+	Quantity    int    `gorm:"not null" json:"quantity" form:"quantity" valid:"required~Quantity of variant is required, numeric~Invalid quantity format"`
+	ProductID   uint
+	Product     *Product
 	CreatedAt   *time.Time `json:"created_at,omitempty"`
 	UpdatedAt   *time.Time `json:"updated_at,omitempty"`
 }

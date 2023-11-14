@@ -8,11 +8,13 @@ import (
 )
 
 type Product struct {
-	ID        uint   `gorm:"primaryKey"`
-	UUID      string `gorm:"not null;type:varchar(50)"`
-	Name      string `gorm:"not null;unique" json:"name" form:"name" valid:"required~Your product name is required"`
-	ImageURL  string `gorm:"not null;type:varchar"`
+	ID        uint   `gorm:"primaryKey" json:"id"`
+	UUID      string `gorm:"not null" json:"uuid"`
+	Name      string `gorm:"not null" json:"name" form:"name" valid:"required~Your product name is required"`
+	ImageURL  string `gorm:"not null"`
 	AdminID   uint
+	Admin     *Admin
+	Variant   []Variant `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"variants"`
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 }
