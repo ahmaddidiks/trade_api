@@ -177,5 +177,22 @@ func GetProductByUUID(ctx *gin.Context) {
 }
 
 func DeteleProductByUUID(ctx *gin.Context) {
+	db := database.GetDB()
+	var product models.Product
 
+	productUUID := ctx.Param("productUUID")
+	err = db.Where("uuid = ?", productUUID).Delete(&product).Error
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "record not found",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    product,
+	})
 }
