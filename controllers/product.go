@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/morkid/paginate"
 )
 
 type productRequest struct {
@@ -72,20 +73,17 @@ func CreateProduct(ctx *gin.Context) {
 func GetAllProducts(ctx *gin.Context) {
 	db := database.GetDB()
 
-	results := []models.Product{}
-
-	// err = db.Debug().Preload("Admin").Find(&results).Error
-	err = db.Find(&results).Error
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad request",
-			"message": err.Error(),
-		})
-		return
-	}
+	// model := db.Joins("Admin").Model(&models.Product{})
+	model := db.Model(&models.Product{})
+	pg := paginate.New()
+	page := pg.With(model).Request(ctx.Request).Response(&[]models.Product{})
+	// log.Println("page total ", page.Total)
+	// log.Println("page item ", page.Items)
+	// log.Println(page.First)
+	// log.Println(page.Last)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": results,
+		"data": page,
 	})
 }
 
@@ -158,10 +156,10 @@ func UpdateProductByUUID(ctx *gin.Context) {
 
 func GetProductByUUID(ctx *gin.Context) {
 	db := database.GetDB()
-	var product models.Product
+	var result models.Product
 
 	productUUID := ctx.Param("productUUID")
-	err = db.First(&product).Where("uuid = ?", productUUID).Error
+	err = db.First(&result).Where("uuid = ?", productUUID).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -172,7 +170,7 @@ func GetProductByUUID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"data":    product,
+		"data":    result,
 	})
 }
 

@@ -29,6 +29,9 @@ func StartServer() *gin.Engine {
 	{
 		auth.POST("/register", controllers.RegisterAdmin)
 		auth.POST("/login", controllers.LoginAdmin)
+		// todo
+		// update email
+		// update password
 	}
 
 	product := router.Group("/products")
@@ -44,6 +47,8 @@ func StartServer() *gin.Engine {
 
 	variant := router.Group("/products/variant")
 	{
+		product.Use(middleware.Authentication())
+
 		variant.GET("/", controllers.GetAllVariants)
 		variant.POST("/", controllers.CreateVariant)
 		variant.PUT("/:variantUUID", controllers.UpdateVariantByUUID)
