@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/morkid/paginate"
 )
 
 type productRequest struct {
@@ -31,9 +30,20 @@ func CreateProduct(ctx *gin.Context) {
 	contentType := helpers.GetContentType(ctx)
 
 	if contentType == appJSON {
-		ctx.ShouldBindJSON(&reqProduct)
+		if err = ctx.ShouldBindJSON(&reqProduct); err != nil {
+			ctx.JSON(http.StatusNotAcceptable, gin.H{
+				"error":   "Bad request",
+				"message": err.Error()})
+			return
+		}
+
 	} else {
-		ctx.ShouldBind(&reqProduct)
+		if err = ctx.ShouldBind(&reqProduct); err != nil {
+			ctx.JSON(http.StatusNotAcceptable, gin.H{
+				"error":   "Bad request",
+				"message": err.Error()})
+			return
+		}
 	}
 
 	if err = ctx.ShouldBind(&reqProduct); err != nil {
@@ -71,20 +81,59 @@ func CreateProduct(ctx *gin.Context) {
 }
 
 func GetAllProducts(ctx *gin.Context) {
+	// get all
 	db := database.GetDB()
 
-	// model := db.Joins("Admin").Model(&models.Product{})
-	model := db.Model(&models.Product{})
-	pg := paginate.New()
-	page := pg.With(model).Request(ctx.Request).Response(&[]models.Product{})
-	// log.Println("page total ", page.Total)
-	// log.Println("page item ", page.Items)
-	// log.Println(page.First)
-	// log.Println(page.Last)
+	results := []models.Product{}
+
+	err = db.Debug().Preload("Admin").Preload("Variant").Find(&results).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": page,
+		"data": results,
 	})
+
+	// db := database.GetDB()
+
+	// search := ctx.Query("search")
+	// search = "%" + search + "%"
+	// // model := db.Model(&models.Product{})
+	// model := db.Joins("Admin").Model(&models.Product{})
+
+	// var products []models.Product
+
+	// db.Where("name LIKE ?", search).Find(&products)
+
+	// if search != "" {
+	// 	model = db.Model(&models.Product{}).Where("name LIKE ?", search)
+	// } else {
+	// 	model = db.Model(&models.Product{})
+	// }
+
+	// pg := paginate.New()
+	// page := pg.With(model).Request(ctx.Request).Response(&[]models.Product{})
+
+	// ctx.JSON(http.StatusOK, gin.H{
+	// 	"data": page,
+	// })
+
+	// pg := paginate.New()
+	// paginator := pg.With(&paginate.Param{
+	// 	DB:      db,
+	// 	Offset:  offset,
+	// 	Limit:   limit,
+	// 	OrderBy: []string{"created_at desc"},
+	// }).Bind(&products)
+
+	// ctx.JSON(http.StatusOK, gin.H{
+	// 	"data": products,
+	// })
 }
 
 func UpdateProductByUUID(ctx *gin.Context) {

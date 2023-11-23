@@ -45,7 +45,7 @@ func StartServer() *gin.Engine {
 		product.GET("/:productUUID", controllers.GetProductByUUID)
 	}
 
-	variant := router.Group("/products/variant")
+	variant := router.Group("/products/variants")
 	{
 		product.Use(middleware.Authentication())
 

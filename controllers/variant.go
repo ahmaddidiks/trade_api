@@ -13,15 +13,15 @@ import (
 type variantRequest struct {
 	VariantName string `form:"variant_name" json:"variant_name" binding:"required"`
 	Quantity    uint   `form:"quantity" json:"quantity" binding:"required"`
-	ProductID   uint   `form:"product_id" json:"product_id"`
+	ProductID   string `form:"product_id" json:"product_id"`
 }
 
 func CreateVariant(ctx *gin.Context) {
 	db := database.GetDB()
 	var variant models.Variant
 	var reqVariant variantRequest
+	var product models.Product
 
-	// adminData := ctx.MustGet("adminData").(jwt.MapClaims)
 	contentType := helpers.GetContentType(ctx)
 
 	if contentType == appJSON {
@@ -40,10 +40,20 @@ func CreateVariant(ctx *gin.Context) {
 		}
 	}
 
+	// // search product id by uuid
+	err = db.First(&product).Where("uuid = ?", reqVariant.ProductID).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
+
 	variant.UUID = uuid.New().String()
 	variant.VariantName = reqVariant.VariantName
 	variant.Quantity = reqVariant.Quantity
-	variant.ProductID = reqVariant.ProductID
+	variant.ProductID = product.ID
 
 	err = db.Debug().Create(&variant).Error
 	if err != nil {
@@ -65,7 +75,7 @@ func GetAllVariants(ctx *gin.Context) {
 
 	results := []models.Variant{}
 
-	// err = db.Debug().Preload("Admin").Find(&results).Error
+	err = db.Debug().Preload("Product").Find(&results).Error
 	err = db.Find(&results).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
