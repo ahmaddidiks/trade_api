@@ -37,9 +37,10 @@ func StartServer() *gin.Engine {
 	product := router.Group("/products")
 	{
 		product.Use(middleware.Authentication())
-
 		product.GET("/", controllers.GetAllProducts)
 		product.POST("/", controllers.CreateProduct)
+
+		product.Use(middleware.ProductAuthorization())
 		product.PUT("/:productUUID", controllers.UpdateProductByUUID)
 		product.DELETE("/:productUUID", controllers.DeteleProductByUUID)
 		product.GET("/:productUUID", controllers.GetProductByUUID)
@@ -51,6 +52,8 @@ func StartServer() *gin.Engine {
 
 		variant.GET("/", controllers.GetAllVariants)
 		variant.POST("/", controllers.CreateVariant)
+
+		variant.Use(middleware.VariantAuthorization())
 		variant.PUT("/:variantUUID", controllers.UpdateVariantByUUID)
 		variant.DELETE("/:variantUUID", controllers.DeleteVariantByUUID)
 		variant.GET("/:variantUUID", controllers.GetVariantByUUID)
