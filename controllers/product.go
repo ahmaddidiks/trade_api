@@ -164,7 +164,7 @@ func UpdateProductByUUID(ctx *gin.Context) {
 	}
 
 	// retrieve product details from db
-	err = db.First(&product).Where("uuid = ?", productUUID).Error
+	err = db.Where("uuid = ?", productUUID).First(&product).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -208,7 +208,7 @@ func GetProductByUUID(ctx *gin.Context) {
 	var result models.Product
 
 	productUUID := ctx.Param("productUUID")
-	err = db.First(&result).Where("uuid = ?", productUUID).Error
+	err = db.Where("uuid = ?", productUUID).First(&result).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -226,8 +226,24 @@ func GetProductByUUID(ctx *gin.Context) {
 func DeteleProductByUUID(ctx *gin.Context) {
 	db := database.GetDB()
 	var product models.Product
+	var variant models.Variant
 
 	productUUID := ctx.Param("productUUID")
+
+	// get product id from uuid
+	err = db.Where("uuid = ?", productUUID).First(&product).Error
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// rm product variant
+	err = db.Where("product_id = ?", product.ID).Delete(&variant).Error
+
+	// rm product
 	err = db.Where("uuid = ?", productUUID).Delete(&product).Error
 
 	if err != nil {
