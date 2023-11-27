@@ -41,7 +41,7 @@ func CreateVariant(ctx *gin.Context) {
 	}
 
 	// // search product id by uuid
-	err = db.First(&product).Where("uuid = ?", reqVariant.ProductID).Error
+	err = db.Where("uuid = ?", reqVariant.ProductID).First(&product).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -94,7 +94,7 @@ func UpdateVariantByUUID(ctx *gin.Context) {
 	var variant models.Variant
 	var reqVariant variantRequest
 
-	productUUID := ctx.Param("productUUID")
+	variantUUID := ctx.Param("variantUUID")
 
 	// adminData := ctx.MustGet("adminData").(jwt.MapClaims) // only need uuid
 	contentType := helpers.GetContentType(ctx)
@@ -117,7 +117,7 @@ func UpdateVariantByUUID(ctx *gin.Context) {
 	}
 
 	// retrieve product details from db
-	err = db.First(&variant).Where("uuid = ?", productUUID).Error
+	err = db.Where("uuid = ?", variantUUID).First(&variant).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -147,8 +147,8 @@ func DeleteVariantByUUID(ctx *gin.Context) {
 	db := database.GetDB()
 	var result models.Variant
 
-	productUUID := ctx.Param("productUUID")
-	err = db.Where("uuid = ?", productUUID).Delete(&result).Error
+	variantUUID := ctx.Param("variantUUID")
+	err = db.Where("uuid = ?", variantUUID).Delete(&result).Error
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -160,7 +160,7 @@ func DeleteVariantByUUID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"data":    result,
+		"data":    nil,
 	})
 }
 
@@ -168,8 +168,8 @@ func GetVariantByUUID(ctx *gin.Context) {
 	db := database.GetDB()
 	var result models.Variant
 
-	productUUID := ctx.Param("productUUID")
-	err = db.First(&result).Where("uuid = ?", productUUID).Error
+	variantUUID := ctx.Param("variantUUID")
+	err = db.Where("uuid = ?", variantUUID).First(&result).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",

@@ -45,13 +45,13 @@ func VariantAuthorization() gin.HandlerFunc {
 		var getProduct models.Product
 		var getVariant models.Variant
 
-		productUUID := ctx.Param("productUUID")
+		uuid := ctx.Param("variantUUID")
 
 		userData := ctx.MustGet("adminData").(jwt.MapClaims)
 		userID := uint(userData["id"].(float64)) // adminID
 
 		// get variant productID from UUID
-		err := db.Where("uuid = ?", productUUID).First(&getVariant).Error
+		err := db.Where("uuid = ?", uuid).First(&getVariant).Error
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error":   err.Error(),

@@ -48,8 +48,7 @@ func StartServer() *gin.Engine {
 
 	variant := router.Group("/products/variants")
 	{
-		product.Use(middleware.Authentication())
-
+		variant.Use(middleware.Authentication())
 		variant.GET("/", controllers.GetAllVariants)
 		variant.POST("/", controllers.CreateVariant)
 

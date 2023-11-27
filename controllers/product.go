@@ -256,6 +256,6 @@ func DeteleProductByUUID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"data":    product,
+		"data":    nil,
 	})
 }
