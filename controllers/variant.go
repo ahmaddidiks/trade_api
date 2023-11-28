@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"math"
 	"net/http"
+	"strconv"
 	"trade-api/database"
 	"trade-api/helpers"
 	"trade-api/models"
@@ -71,11 +73,22 @@ func CreateVariant(ctx *gin.Context) {
 }
 
 func GetAllVariants(ctx *gin.Context) {
+	// get all
 	db := database.GetDB()
+	var results []models.Variant
 
-	results := []models.Variant{}
+	search := ctx.Query("search") + "%"
+	limit, _ := strconv.Atoi(ctx.Query("limit"))
+	offset, _ := strconv.Atoi(ctx.Query("offset"))
+	var count int64
 
-	err = db.Debug().Preload("Product").Find(&results).Error
+	// limit chekc, limit gotta > 1
+	if limit == 0 {
+		limit = 10
+	}
+
+	err = db.Where("variant_name LIKE ?", search).Find(&results).Count(&count).Error
+	err = db.Debug().Preload("Product").Where("variant_name LIKE ?", search).Limit(limit).Offset(offset).Find(&results).Error
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -84,8 +97,21 @@ func GetAllVariants(ctx *gin.Context) {
 		return
 	}
 
+	// calc last page and current page
+	lastPage := int(math.Ceil(float64(count) / float64(limit)))
+	page := offset/limit + 1
+
+	pagination := Pagination{
+		LastPage: lastPage,
+		Limit:    limit,
+		Offset:   offset,
+		Page:     page,
+		Total:    count,
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": results,
+		"data":       results,
+		"pagination": pagination,
 	})
 }
 
