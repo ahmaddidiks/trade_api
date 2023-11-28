@@ -11,7 +11,7 @@ func main() {
 	// if err != nil {
 	// 	log.Fatal("Error loading .env file")
 	// }
-	PORT := os.Getenv("APP_PORT")
+	PORT := os.Getenv("PORT")
 
 	database.StartDB()
 	routers.StartServer().Run(PORT)
