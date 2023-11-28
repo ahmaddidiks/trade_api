@@ -1,29 +1,26 @@
 package routers
 
 import (
-	"log"
-	"os"
 	"trade-api/controllers"
 	"trade-api/middleware"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func StartServer() *gin.Engine {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	trustedIP := os.Getenv("TRUSTED_IP")
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
+	// trustedIP := os.Getenv("TRUSTED_IP")
 
-	var trustedIPs []string
-	trustedIPs = append(trustedIPs, trustedIP)
+	// var trustedIPs []string
+	// trustedIPs = append(trustedIPs, trustedIP)
 
 	router := gin.Default()
-	// fix trusted all proxies this is not safe
-	router.ForwardedByClientIP = true
-	router.SetTrustedProxies(trustedIPs)
+	// // fix trusted all proxies this is not safe
+	// router.ForwardedByClientIP = true
+	// router.SetTrustedProxies(trustedIPs)
 
 	auth := router.Group("/auth")
 	{

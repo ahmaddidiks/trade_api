@@ -6,7 +6,6 @@ import (
 	"os"
 	"trade-api/models"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -17,10 +16,10 @@ var (
 )
 
 func StartDB() {
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err = godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	user := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
